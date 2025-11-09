@@ -4,7 +4,6 @@ properties([
     ])
 ])
 
-
 pipeline {
     agent any
 
@@ -19,7 +18,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo '🐳 Building Docker image for frontend...'
-               sh 'docker build -t artsays-frontend -f Artsays-Frontend/Dockerfile Artsays-Frontend'
+                sh 'docker build -t artsays-frontend .'
             }
         }
 
@@ -27,16 +26,17 @@ pipeline {
             steps {
                 echo '🚀 Running Docker container for frontend...'
 
-                // Stop and remove old container if exists
                 sh '''
+                # Stop and remove old container if exists
                 if [ $(docker ps -aq -f name=artsays-frontend-container) ]; then
                   docker stop artsays-frontend-container || true
                   docker rm artsays-frontend-container || true
                 fi
 
+                # Run new container
                 docker run -d \
                   --name artsays-frontend-container \
-                  -p 80:80\
+                  -p 80:80 \
                   artsays-frontend
                 '''
             }
